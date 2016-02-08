@@ -14,14 +14,14 @@ function visitObject(obj, schema, bag, options) {
 
   let normalized = {};
   for (let key in obj) {
-    if ( obj.hasOwnProperty(key) && (key != 'Embedded') ) {
+    if ( obj.hasOwnProperty(key) && (key != 'embedded') ) {
       const entity = visit(obj[key], schema[key], bag, options);
       assignEntity.call(null, normalized, key, entity);
     }
   }
 
-  if (obj.hasOwnProperty("Embedded")) {
-    let embedded = obj.Embedded;
+  if (obj.hasOwnProperty("embedded")) {
+    let embedded = obj.embedded;
     for (let key in embedded) {
       if (embedded.hasOwnProperty(key)) {
         const entity = visit(embedded[key], schema[key], bag, options);
@@ -144,9 +144,9 @@ export function normalize(obj, schema, options = {}) {
 
   let bag = {};
   let result;
-  if ( (schema instanceof IterableSchema) && (obj.hasOwnProperty("Embedded")) ) {
+  if ( (schema instanceof IterableSchema) && (obj.hasOwnProperty("embedded")) ) {
     let key = schema.getItemSchema().getKey();
-    result = visit(obj.Embedded[key], schema, bag, options);
+    result = visit(obj.embedded[key], schema, bag, options);
   } else {
     result = visit(obj, schema, bag, options);
   }

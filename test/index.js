@@ -63,7 +63,7 @@ describe('normalizr', function () {
 
     
    	input = {
-    	Embedded: {
+    	embedded: {
     		article: [
 			  	{
 			      id: 1,
@@ -603,7 +603,7 @@ describe('normalizr', function () {
     input = {
       id: 1,
       title: 'Some Article',
-      Embedded: {
+      embedded: {
 	      author: {
 	        id: 3,
 	        name: 'Mike Persson'
