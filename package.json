@@ -1,5 +1,5 @@
 {
-  "name": "normalizr",
+  "name": "halnormalizr",
   "version": "2.0.0",
   "description": "Normalizes JSON according to schema for Flux application",
   "main": "lib/index.js",
@@ -11,14 +11,15 @@
     "flux",
     "normalize",
     "api",
-    "json"
+    "json",
+    "hal"
   ],
   "files": [
     "dist",
     "lib",
     "src"
   ],
-  "author": "Dan Abramov",
+  "author": "Varuna Bamunusinghe",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/gaearon/normalizr/issues"
