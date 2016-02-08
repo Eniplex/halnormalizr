@@ -56,12 +56,57 @@ describe('normalizr', function () {
     }).should.throw();
   });
 
+  it('can normalize single hal entity array', function () {
+    var articleEntity = new Schema('article'),
+    	articleList = new Schema('article'),
+        input;
+
+    
+   	input = {
+    	Embedded: {
+    		article: [
+			  	{
+			      id: 1,
+			      title: 'Some Article',
+			      isFavorite: false
+			    },
+			    {
+			      id: 2,
+			      title: 'Some Article',
+			      isFavorite: false
+			    }
+			]
+		}
+    };
+
+    Object.freeze(input);
+
+    var normalized = normalize(input, arrayOf(articleEntity));
+    normalized.should.eql({
+      result: [1, 2],
+      entities: {
+        article: {
+          1: {
+            id: 1,
+            title: 'Some Article',
+            isFavorite: false
+          },
+          2: {
+            id: 2,
+            title: 'Some Article',
+            isFavorite: false
+          }
+        }
+      }
+    });
+  });
+
   it('can normalize single entity', function () {
     var article = new Schema('articles'),
         input;
 
     input = {
-      id: 1,
+  	  id: 1,
       title: 'Some Article',
       isFavorite: false
     };
@@ -95,14 +140,14 @@ describe('normalizr', function () {
     });
 
     input = {
-      id: 1,
+	  id: 1,
       title: 'Some Article',
       isFavorite: false,
       typeId: 1,
       type: {
         id: 1,
       }
-    };
+	};
 
     Object.freeze(input);
 
@@ -540,6 +585,51 @@ describe('normalizr', function () {
             id: 1,
             type: 'tutorial',
             title: 'Some Tutorial'
+          }
+        }
+      }
+    });
+  });
+
+	it('can normalize hal nested entities', function () {
+    var article = new Schema('article'),
+        user = new Schema('user'),
+        input;
+
+    article.define({
+      author: user
+    });
+
+    input = {
+      id: 1,
+      title: 'Some Article',
+      Embedded: {
+	      author: {
+	        id: 3,
+	        name: 'Mike Persson'
+	      }
+	  }
+    };
+
+    Object.freeze(input);
+
+    debugger
+    let normalized = normalize(input, article);
+    debugger
+    normalized.should.eql({
+      result: 1,
+      entities: {
+        article: {
+          1: {
+            id: 1,
+            title: 'Some Article',
+            author: 3
+          }
+        },
+        user: {
+          3: {
+            id: 3,
+            name: 'Mike Persson'
           }
         }
       }

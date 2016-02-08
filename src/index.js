@@ -14,11 +14,22 @@ function visitObject(obj, schema, bag, options) {
 
   let normalized = {};
   for (let key in obj) {
-    if (obj.hasOwnProperty(key)) {
+    if ( obj.hasOwnProperty(key) && (key != 'Embedded') ) {
       const entity = visit(obj[key], schema[key], bag, options);
       assignEntity.call(null, normalized, key, entity);
     }
   }
+
+  if (obj.hasOwnProperty("Embedded")) {
+    let embedded = obj.Embedded;
+    for (let key in embedded) {
+      if (embedded.hasOwnProperty(key)) {
+        const entity = visit(embedded[key], schema[key], bag, options);
+        assignEntity.call(null, normalized, key, entity);
+      }
+    }
+  }
+
   return normalized;
 }
 
@@ -71,20 +82,23 @@ function defaultMergeIntoEntity(entityA, entityB, entityKey) {
 function visitEntity(entity, entitySchema, bag, options) {
   const { mergeIntoEntity = defaultMergeIntoEntity } = options;
 
-  const entityKey = entitySchema.getKey();
-  const id = entitySchema.getId(entity);
+  var id = entitySchema.getId(entity);
+  if (id != null) {
+    const entityKey = entitySchema.getKey();
+    if (!bag.hasOwnProperty(entityKey)) {
+      bag[entityKey] = {};
+    }
 
-  if (!bag.hasOwnProperty(entityKey)) {
-    bag[entityKey] = {};
+    if (!bag[entityKey].hasOwnProperty(id)) {
+      bag[entityKey][id] = {};
+    }
+
+    let stored = bag[entityKey][id];
+    let normalized = visitObject(entity, entitySchema, bag, options);
+    mergeIntoEntity(stored, normalized, entityKey);
+  } else {
+    id = visitObject(entity, entitySchema, bag, options);
   }
-
-  if (!bag[entityKey].hasOwnProperty(id)) {
-    bag[entityKey][id] = {};
-  }
-
-  let stored = bag[entityKey][id];
-  let normalized = visitObject(entity, entitySchema, bag, options);
-  mergeIntoEntity(stored, normalized, entityKey);
 
   return id;
 }
@@ -129,8 +143,14 @@ export function normalize(obj, schema, options = {}) {
   }
 
   let bag = {};
-  let result = visit(obj, schema, bag, options);
-
+  let result;
+  if ( (schema instanceof IterableSchema) && (obj.hasOwnProperty("Embedded")) ) {
+    let key = schema.getItemSchema().getKey();
+    result = visit(obj.Embedded[key], schema, bag, options);
+  } else {
+    result = visit(obj, schema, bag, options);
+  }
+  
   return {
     entities: bag,
     result

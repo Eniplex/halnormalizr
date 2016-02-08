@@ -26,6 +26,7 @@
   "homepage": "https://github.com/gaearon/normalizr",
   "scripts": {
     "test": "mocha --compilers js:babel/register --recursive",
+    "test:debug": "mocha --compilers js:babel/register --recursive --debug-brk",
     "test:watch": "npm run test -- --watch",
     "prebuild": "rimraf dist lib",
     "build": "webpack && babel src --out-dir lib",
